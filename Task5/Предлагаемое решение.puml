@@ -1,0 +1,63 @@
+@startuml
+
+participant Operator as "Оператор"
+participant UI as "Интерфейс"
+participant Cache as "Кеш"
+participant DB as "База данных"
+participant Service as "Сервис"
+
+Operator ->> UI: Запрос списка заказов
+activate UI
+
+UI ->> Cache: Получить заказы
+activate Cache
+
+Cache --x UI: Промах кеша (нет данных)
+deactivate Cache
+
+UI ->> Service: Получить заказы
+activate Service
+
+Service ->> DB: Запрос к базе
+activate DB
+
+DB ->> Service: Получение данных
+deactivate DB
+
+Service ->> Cache: Сохранить данные
+activate Cache
+
+Cache ->> Service: Подтверждение сохранения
+deactivate Cache
+
+Service ->> UI: Возврат данных
+deactivate Service
+
+UI ->> Operator: Отображение данных
+deactivate UI
+
+Operator ->> UI: Изменение статуса заказа
+activate UI
+
+UI ->> Service: Обновить статус
+activate Service
+
+Service ->> Cache: Обновить кеш
+activate Cache
+
+Cache ->> Service: Подтверждение обновления
+deactivate Cache
+
+Service ->> DB: Обновить базу
+activate DB
+
+DB ->> Service: Подтверждение обновления
+deactivate DB
+
+Service ->> UI: Подтверждение обновления
+deactivate Service
+
+UI ->> Operator: Отображение обновленных данных
+deactivate UI
+
+@enduml
